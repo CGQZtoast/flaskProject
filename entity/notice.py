@@ -10,7 +10,6 @@ from database.models import notice
 
 def sent_notice(ids, msg, title, send_time):
     try:
-        # TODO 去掉空格
         ids = ids.replace(' ', '')
         msg = notice(notice_info=msg, user_ids=ids, notice_title=title, notice_time=send_time)
         db.session.add(msg)

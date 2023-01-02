@@ -20,6 +20,7 @@ def send_chunk(path):  # 流式读取
         print('该路径下不存在模型文件')
 
 
+
 # 查找模型路径
 def get_path_of_fingerprint_model(id):
     path = db.session.query(

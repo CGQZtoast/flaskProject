@@ -295,15 +295,8 @@ class UserManege(object):
             ).filter().all()
 
             for info in user_info:
-                # TODO 判断(省市区)是否为空
-                # if info[4] is not None:
-                #     temp_user = User(info[0], info[1], info[2], info[3], info[4], info[5], info[6])
-                # else:
-                #     temp_user = User(info[0], info[1], info[2], info[3], 'None', info[5], info[6])
                 temp_user = User(info[0], info[1], info[2], info[3], info[4], info[5], info[6])
                 self.__user_msg.append(temp_user.get_dict())
-
-
             return True
         except Exception as e:
             print('entity-UserManege-get_all_user_information error')
