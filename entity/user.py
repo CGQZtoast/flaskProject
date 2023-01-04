@@ -324,6 +324,20 @@ class UserManege(object):
                 temp_user = user.query.filter(user.id == user_id).first()
                 if temp_user is not None:
                     temp_user.deleted = 1
+                # 连级删除 密码和模型
+                # 密码
+                face_pwds = pwd_face.query.filter(pwd_face.user_id == user_id).all()
+                if face_pwds is not None:
+                    for face_pwd in face_pwds:
+                        face_pwd.deleted = 1
+                fingerprint_pwds = pwd_fingerprint.query.filter(pwd_fingerprint.user_id == user_id).all()
+                if fingerprint_pwds is not None:
+                    for fingerprint_pwd in fingerprint_pwds:
+                        fingerprint_pwd.deleted = 1
+                # 模型
+                fingerprint_model = model_fingerprint.query.filter(model_fingerprint.user_id == user_id).first()
+                if fingerprint_model is not None:
+                    fingerprint_model.deleted = 1
             db.session.commit()
             return True
         except Exception as e:
