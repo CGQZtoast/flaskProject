@@ -55,7 +55,8 @@ class LogManege(object):
             log_login.address,
             log_login.device
         ).filter(
-            log_login.user_id == user.id
+            log_login.user_id == user.id,
+            log_login.deleted != 1
         ).all()
 
         self.__login_logs = []
@@ -67,7 +68,7 @@ class LogManege(object):
         return self.__login_logs
 
     def get_error_log(self):
-        msgs = log_error.query.filter().all()
+        msgs = log_error.query.filter(log_error.deleted != 1).all()
 
         self.__error_logs = []
 
@@ -80,7 +81,10 @@ class LogManege(object):
     def delete_login_logs(self, ids):
         try:
             for id in ids:
-                log_login.query.filter(log_login.id == id).delete()
+                # log_login.query.filter(log_login.id == id).delete()
+                login_log = log_login.query.filter(log_login.id == id).first()
+                if login_log is not None:
+                    login_log.deleted = 1
             db.session.commit()
             return True
         except Exception as e:
@@ -90,7 +94,10 @@ class LogManege(object):
     def delete_error_logs(self, ids):
         try:
             for id in ids:
-                log_error.query.filter(log_error.id == id).delete()
+                # log_error.query.filter(log_error.id == id).delete()
+                error_log = log_error.query.filter(log_error.id == id).first()
+                if error_log is not None:
+                    error_log.deleted = 1
             db.session.commit()
             return True
         except Exception as e:

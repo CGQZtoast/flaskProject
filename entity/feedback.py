@@ -6,6 +6,7 @@
 
 import datetime
 
+import userinfo.views
 from database.models import *
 
 
@@ -45,7 +46,8 @@ class FeedbackManege(object):
             feedback.time,
             feedback.is_solve
         ).filter(
-            feedback.user_id == user.id
+            feedback.user_id == user.id,
+            feedback.deleted != 1
         ).all()
         if msgs is not None:
             for msg in msgs:
@@ -56,10 +58,11 @@ class FeedbackManege(object):
     def handling_feedback(self, id, msg, time):
         try:
             edit_feedback = feedback.query.filter(feedback.id == id).first()
-            edit_feedback.feedback = msg
-            edit_feedback.time = time
-            edit_feedback.is_solve = 1
-            db.session.commit()
+            if edit_feedback is not None:
+                edit_feedback.feedback = msg
+                edit_feedback.time = time
+                edit_feedback.is_solve = 1
+                db.session.commit()
             return True
         except Exception as e:
             print(e)
@@ -68,7 +71,10 @@ class FeedbackManege(object):
     def delete_feedbacks(self, ids):
         try:
             for id in ids:
-                feedback.query.filter(feedback.id == id).delete()
+                # feedback.query.filter(feedback.id == id).delete()
+                temp_feedback = feedback.query.filter(feedback.id == id).first()
+                if temp_feedback is not None:
+                    temp_feedback.deleted = 1
             db.session.commit()
             return True
         except Exception as e:

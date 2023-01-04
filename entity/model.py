@@ -38,7 +38,8 @@ def get_path_of_face_model(id):
     path = db.session.query(
         model_face.path
     ).filter(
-        model_face.id == id
+        model_face.id == id,
+        model_face.deleted != 1
     ).first()
     if path is not None:
         return path[0]
@@ -53,6 +54,8 @@ def get_face_model():
         model_face.name,
         model_face.upload_time,
         model_face.used
+    ).filter(
+        model_face.deleted != 1
     ).all()
     for msg in model_msg:
         model = {}
@@ -73,7 +76,8 @@ def get_fingerprint_model():
         user.phone,
         model_fingerprint.update_time
     ).filter(
-        model_fingerprint.user_id == user.id
+        model_fingerprint.user_id == user.id,
+        model_fingerprint.deleted != 1
     ).all()
     for msg in model_msg:
         model = {}
@@ -91,6 +95,8 @@ def add_fingerprint_model(phone, update_time, name, file_path):
     model1 = model_fingerprint.query.filter(
         user.phone == phone,
         user.id == model_fingerprint.user_id
+    ).filter(
+        model_fingerprint.deleted != 1
     ).first()
     if model1 is not None:
         model1.update_time = update_time
@@ -99,7 +105,10 @@ def add_fingerprint_model(phone, update_time, name, file_path):
         db.session.commit()
         return True
     else:
-        temp_user = user.query.filter(user.phone == phone).first()
+        temp_user = user.query.filter(
+            user.phone == phone,
+            user.deleted != 1
+        ).first()
         if temp_user is None:
             print(phone, '用户不存在')
             return False
@@ -129,7 +138,10 @@ def add_face_model(update_time, name, file_path):
 
 def delete_face_model(id):
     try:
-        model_face.query.filter(model_face.id == id).delete()
+        # model_face.query.filter(model_face.id == id).delete()
+        face_model = model_face.query.filter(model_face.id == id).first()
+        if face_model is not None:
+            face_model.deleted = 1
         db.session.commit()
         return True
     except Exception as e:
@@ -140,7 +152,10 @@ def delete_face_model(id):
 def delete_fingerprint_model(ids):
     try:
         for id in ids:
-            model_fingerprint.query.filter(model_fingerprint.id == id).delete()
+            # model_fingerprint.query.filter(model_fingerprint.id == id).delete()
+            fingerprint_model = model_fingerprint.query.filter(model_fingerprint.id == id).first()
+            if fingerprint_model is not None:
+                fingerprint_model.deleted = 1
             db.session.commit()
         return True
     except Exception as e:

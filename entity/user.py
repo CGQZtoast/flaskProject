@@ -47,7 +47,9 @@ class User(object):
             self.__district = '-'
 
     def get_dict(self):
-        temp_user = {'id': self.__id, 'phone': self.__phone, 'sex': str(self.__sex), 'birth': str(self.__DOB), 'region': [self.__province, self.__city, self.__district], 'showRegion': self.__province + ' ' + self.__city + ' ' + self.__district}
+        temp_user = {'id': self.__id, 'phone': self.__phone, 'sex': str(self.__sex), 'birth': str(self.__DOB),
+                     'region': [self.__province, self.__city, self.__district],
+                     'showRegion': self.__province + ' ' + self.__city + ' ' + self.__district}
         # temp_user = {'id': self.__id, 'phone': self.__phone, 'sex': str(self.__sex), 'birth': str(self.__DOB), 'region': [self.__province, self.__city, self.__district], 'showRegion': self.__province}
 
         return temp_user
@@ -108,7 +110,10 @@ class UserManege(object):
 
             # 获取日期对应的用户总数
             for date in temp_date:
-                count = user.query.filter(user.register_time <= date).count()
+                count = user.query.filter(
+                    user.register_time <= date,
+                    user.deleted != 1
+                ).count()
                 self.__total_user.append(count)
                 # 日期处理
                 if total_user_time_slot == '0':
@@ -149,7 +154,8 @@ class UserManege(object):
                     continue
                 count = user.query.filter(
                     user.register_time > temp_date[i - 1],
-                    user.register_time <= temp_date[i]
+                    user.register_time <= temp_date[i],
+                    user.deleted != 1
                 ).count()
                 date = temp_date[i]
                 if increased_user_time_slot == "0":
@@ -191,16 +197,18 @@ class UserManege(object):
         """
         用户年龄分布统计
         """
-        sql1 = "select count(*) from user where TIMESTAMPDIFF(YEAR, DOB, CURDATE()) <= 10"
+        sql1 = "select count(*) from user where TIMESTAMPDIFF(YEAR, DOB, CURDATE()) <= 10 and deleted != 0"
         sql2 = "select count(*) " \
                "from user " \
                "where TIMESTAMPDIFF(YEAR, DOB, CURDATE()) > 10 and " \
-               "TIMESTAMPDIFF(YEAR, DOB, CURDATE()) <= 20"
+               "TIMESTAMPDIFF(YEAR, DOB, CURDATE()) <= 20 and " \
+               "deleted != 1"
         sql3 = "select count(*) " \
                "from user " \
                "where TIMESTAMPDIFF(YEAR, DOB, CURDATE()) > 20 and " \
-               "TIMESTAMPDIFF(YEAR, DOB, CURDATE()) <= 40"
-        sql4 = "select count(*) from user where TIMESTAMPDIFF(YEAR, DOB, CURDATE()) > 40"
+               "TIMESTAMPDIFF(YEAR, DOB, CURDATE()) <= 40 and " \
+               "deleted != 1"
+        sql4 = "select count(*) from user where TIMESTAMPDIFF(YEAR, DOB, CURDATE()) > 40 and deleted != 1"
 
         try:
             ret = db.session.execute(sql1)
@@ -220,8 +228,8 @@ class UserManege(object):
         用户性别分布统计
         """
         try:
-            male_count = user.query.filter(user.sex == 0).count()
-            female_count = user.query.filter(user.sex == 1).count()
+            male_count = user.query.filter(user.sex == 0, user.deleted != 1).count()
+            female_count = user.query.filter(user.sex == 1, user.deleted != 1).count()
             self.__gender_distribution['male'] = male_count
             self.__gender_distribution['female'] = female_count
         except Exception as e:
@@ -237,7 +245,7 @@ class UserManege(object):
             provinces = db.session.query(
                 user.province,
                 func.count()
-            ).filter(user.province != null).group_by(user.province).order_by(func.count().desc()).all()
+            ).filter(user.province != null, user.deleted != 1).group_by(user.province).order_by(func.count().desc()).all()
             number = 1
             count = 0
             for i in provinces:
@@ -292,7 +300,7 @@ class UserManege(object):
                 user.province,
                 user.city,
                 user.district
-            ).filter().all()
+            ).filter(user.deleted != 1).all()
 
             for info in user_info:
                 temp_user = User(info[0], info[1], info[2], info[3], info[4], info[5], info[6])
@@ -312,7 +320,10 @@ class UserManege(object):
         """
         try:
             for user_id in ids:
-                user.query.filter(user.id == user_id).delete()
+                # user.query.filter(user.id == user_id).delete()
+                temp_user = user.query.filter(user.id == user_id).first()
+                if temp_user is not None:
+                    temp_user.deleted = 1
             db.session.commit()
             return True
         except Exception as e:
