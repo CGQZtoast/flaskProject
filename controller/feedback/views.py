@@ -47,7 +47,6 @@ def submit_feedback():
             return_dict = result.error('处理反馈错误')
     else:
         return_dict = result.error()
-
     return jsonify(return_dict)
 
 
@@ -69,5 +68,4 @@ def delete_feedback():
             return_dict = result.error('日志删除失败')
     else:
         return_dict = result.error()
-
     return jsonify(return_dict)
