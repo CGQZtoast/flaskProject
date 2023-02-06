@@ -68,7 +68,7 @@ def upload_face_model():
                     return_dict = result.success()
                 else:
                     # 文件上传失败
-                    return_dict = result.error('用户不存在')
+                    return_dict = result.error('文件上传失败')
             except IOError:
                 # 文件上传失败
                 return_dict = result.error('文件保存失败')

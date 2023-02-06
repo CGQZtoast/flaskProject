@@ -69,24 +69,28 @@ def user_trend():
     if validate_token():
         try:
             data = {}
-            total_user = user.query.count()
+            total_user = user.query.filter(user.deleted != 1).count()
             data['totalUser'] = total_user
             # 判断当前日期
             yesterday = datetime.date.today() - datetime.timedelta(days=1)
             increased_user = user.query.filter(
-                user.register_time == yesterday
+                user.register_time == yesterday and
+                user.deleted != 1
             ).count()
             data['increasedUser'] = increased_user
             increased_feedback = feedback.query.filter(
-                feedback.time >= yesterday
+                feedback.time >= yesterday and
+                user.deleted != 1
             ).count()
             data['increasedFeedback'] = increased_feedback
             unhandled_feedback = feedback.query.filter(
-                feedback.is_solve == 0
+                feedback.is_solve == 0 and
+                feedback.deleted != 1
             ).count()
             data['unhandledFeedback'] = unhandled_feedback
             increased_errorLog = log_error.query.filter(
-                log_error.time >= yesterday
+                log_error.time >= yesterday and
+                log_error.deleted != 1
             ).count()
             data['increasedErrorLog'] = increased_errorLog
             return_dict = result.success(data)

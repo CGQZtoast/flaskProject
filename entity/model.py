@@ -115,7 +115,7 @@ def add_fingerprint_model(phone, update_time, name, file_path):
         else:
             try:
                 id = temp_user.id
-                model = model_fingerprint(user_id=id, name=name,path=file_path,update_time=update_time)
+                model = model_fingerprint(user_id=id, name=name,path=file_path, update_time=update_time, deleted=0)
                 db.session.add(model)
                 db.session.commit()
                 return True
@@ -127,7 +127,7 @@ def add_fingerprint_model(phone, update_time, name, file_path):
 def add_face_model(update_time, name, file_path):
     try:
         model = model_face(name=name, path=file_path, upload_time=update_time,
-                           used=0)
+                           used=0, deleted=0)
         db.session.add(model)
         db.session.commit()
         return True

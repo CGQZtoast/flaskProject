@@ -53,14 +53,15 @@ class FeedbackManege(object):
             for msg in msgs:
                 temp_feedback = Feedback(msg.id, msg.phone, msg.info, msg.time, msg.is_solve)
                 self.__feedback_msg.append(temp_feedback.get_dict())
+        self.__feedback_msg.reverse()
         return self.__feedback_msg
 
     def handling_feedback(self, id, msg, time):
         try:
             edit_feedback = feedback.query.filter(feedback.id == id).first()
             if edit_feedback is not None:
-                edit_feedback.feedback = msg
-                edit_feedback.time = time
+                edit_feedback.admin_feedback = msg
+                edit_feedback.admin_feedback_time = time
                 edit_feedback.is_solve = 1
                 db.session.commit()
             return True

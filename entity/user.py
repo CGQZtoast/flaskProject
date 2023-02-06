@@ -197,7 +197,7 @@ class UserManege(object):
         """
         用户年龄分布统计
         """
-        sql1 = "select count(*) from user where TIMESTAMPDIFF(YEAR, DOB, CURDATE()) <= 10 and deleted != 0"
+        sql1 = "select count(*) from user where TIMESTAMPDIFF(YEAR, DOB, CURDATE()) <= 10 and deleted != 1"
         sql2 = "select count(*) " \
                "from user " \
                "where TIMESTAMPDIFF(YEAR, DOB, CURDATE()) > 10 and " \

@@ -36,7 +36,7 @@ def submit_feedback():
     id = data['id']
     msg = data['returnMsg']
     back_time = data['backTime']
-    print('[post]/delUser,收到的数据为：', data)
+    print('[post]/submitFeedback,收到的数据为：', data)
 
     # 验证token
     if validate_token():

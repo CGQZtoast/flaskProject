@@ -11,7 +11,8 @@ from database.models import notice
 def sent_notice(ids, msg, title, send_time):
     try:
         ids = ids.replace(' ', '')
-        msg = notice(notice_info=msg, user_ids=ids, notice_title=title, notice_time=send_time)
+        # msg = notice(notice_info=msg, user_ids=ids, notice_title=title, notice_time=send_time)
+        msg = notice(info=msg, user_ids=ids, title=title, time=send_time)
         db.session.add(msg)
         db.session.commit()
         return True

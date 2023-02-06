@@ -177,8 +177,8 @@ class user_role(db.Model):
 # ==============================================================
 class notice(db.Model):
     __tablename__ = 'notice'
-    notice_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
     user_ids = db.Column(db.Text)
-    notice_info = db.Column(db.Text)
-    notice_time = db.Column(db.Date)
-    notice_title = db.Column(db.String(255))
+    info = db.Column(db.Text)
+    time = db.Column(db.Date)
+    title = db.Column(db.String(255))
